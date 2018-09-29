@@ -2,32 +2,44 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatToolbarModule, MatMenuModule, MatIconModule, MatButtonModule } from '@angular/material';
+import { MaterialModule } from './material/material.module';
+import { RouterModule } from '@angular/router';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 
-import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app-routing.module';
-import { LandingComponent } from './landing/landing.component';
-import { NavbarComponent } from './navbar/navbar.component';
-import { FooterComponent } from './footer/footer.component';
+import { AppComponent } from './containers/app';
+import { routes } from './routes';
+import { ComponentsModule } from './components';
+import { LandingPageComponent } from './containers/landing-page';
+import { ResultsPageComponent } from './containers/results-page';
+import { DetailsPageComponent } from './containers/details-page';
+import { NotFoundPageComponent } from './containers/not-found-page';
+
+import { AdsApiService } from './services/ads-api.service';
+import { AuthService } from './services/auth/auth.service';
+import { TokenInterceptor } from './services/auth/token.interceptor';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LandingComponent,
-    NavbarComponent,
-    FooterComponent
+    LandingPageComponent,
+    ResultsPageComponent,
+    DetailsPageComponent,
+    NotFoundPageComponent
   ],
   imports: [
-    MatToolbarModule,
-    MatMenuModule,
-    MatIconModule,
-    MatButtonModule,
+    MaterialModule,
     BrowserModule,
     BrowserAnimationsModule,
     FlexLayoutModule,
-    AppRoutingModule
+    ComponentsModule,
+    HttpClientModule,
+    RouterModule.forRoot(routes, { useHash: true })
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    AdsApiService,
+    AuthService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
